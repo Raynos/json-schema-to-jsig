@@ -5,6 +5,8 @@ var jsonBody = require('body/json');
 var process = require('process');
 var console = require('console');
 var serializeJSIG = require('jsig/serialize');
+var chalk = require('chalk');
+var util = require('util');
 
 var parseJSONSchema = require('../index.js');
 
@@ -14,7 +16,7 @@ if (require.main === module) {
     main(parseArgs(process.argv.slice(2)));
 }
 
-function main() {
+function main(argv) {
     jsonBody(process.stdin, onBody);
 
     function onBody(err, schemaTable) {
@@ -26,12 +28,31 @@ function main() {
         for (var i = 0; i < ops.length; i++) {
             var spec = schemaTable[ops[i]];
 
-            console.log('request',
-                serializeJSIG(parseJSONSchema(spec.request))
+            if (argv.schema) {
+                console.log('JSON schema request\n' +
+                    chalk.red(util.inspect(spec.request, {
+                        depth: Infinity
+                    }))
+                );
+            }
+            console.log('JSIG request\n' +
+                chalk.green(toJSIGStr(spec.request))
             );
-            console.log('response',
-                serializeJSIG(parseJSONSchema(spec.response))
+
+            if (argv.schema) {
+                console.log('JSON schema response\n' +
+                    chalk.red(util.inspect(spec.response, {
+                        depth: Infinity
+                    }))
+                );
+            }
+            console.log('JSIG response\n' +
+                chalk.green(toJSIGStr(spec.response))
             );
         }
     }
+}
+
+function toJSIGStr(schema) {
+    return serializeJSIG(parseJSONSchema(schema));
 }
