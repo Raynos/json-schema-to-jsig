@@ -24,8 +24,7 @@ var TYPE_CASTERS = {
 
 module.exports = TYPE_CASTERS;
 
-function castStruct(jsonSchema) {
-    // console.log('struct', jsonSchema);
+function castStruct(jsonSchema, opts) {
     var properties = jsonSchema.properties;
     var required = jsonSchema.required || [];
     var keys = Object.keys(properties);
@@ -52,12 +51,19 @@ function castStruct(jsonSchema) {
 
         return AST.keyValue(
             key,
-            castToJSIG(value),
+            castToJSIG(value, opts),
             {
                 optional: required.indexOf(key) === -1
             }
         );
     }).filter(Boolean);
+
+    if (opts.structName && jsonSchema.id) {
+        keyValues.unshift(AST.keyValue(
+            '$$structName',
+            AST.value('"' + jsonSchema.id + '"', 'string')
+        ));
+    }
 
     return AST.object(keyValues);
 }
@@ -84,13 +90,13 @@ function castObjectLiteral(jsonSchema) {
     return AST.literal('Object');
 }
 
-function castObjectUnion(jsonSchema) {
+function castObjectUnion(jsonSchema, opts) {
     // console.log('objectUnion', jsonSchema);
     var oneOf = jsonSchema.oneOf;
 
     return AST.union(
         oneOf.map(function toJSIG(subSchema) {
-            return castToJSIG(subSchema);
+            return castToJSIG(subSchema, opts);
         })
     );
 }
@@ -105,13 +111,13 @@ function castEnumNumber(jsonSchema) {
     return AST.union(values);
 }
 
-function castObjectIntersection(jsonSchema) {
+function castObjectIntersection(jsonSchema, opts) {
     // console.log('objectIntersection', jsonSchema)
     var allOf = jsonSchema.allOf;
 
     return AST.intersection(
         allOf.map(function toJSIG(subSchema) {
-            return castToJSIG(subSchema);
+            return castToJSIG(subSchema, opts);
         })
     );
 }
@@ -119,13 +125,13 @@ function castObjectIntersection(jsonSchema) {
 /* TODO
     respect minItems and maxItems
 */
-function castArray(jsonSchema) {
+function castArray(jsonSchema, opts) {
     // console.log('array', jsonSchema)
     var items = jsonSchema.items;
 
     var arr = AST.generic(
         AST.literal('Array'),
-        [castToJSIG(items)]
+        [castToJSIG(items, opts)]
     );
 
     return arr;
@@ -137,7 +143,7 @@ function castNumberLiteral(jsonSchema) {
     return AST.literal('Number');
 }
 
-function castObjectPattern(jsonSchema) {
+function castObjectPattern(jsonSchema, opts) {
     // console.log('objectPattern', jsonSchema);
 
     var patternProperties = jsonSchema.patternProperties;
@@ -162,7 +168,7 @@ function castObjectPattern(jsonSchema) {
         AST.literal('Object'),
         [
             key,
-            castToJSIG(patternProperties[pattern])
+            castToJSIG(patternProperties[pattern], opts)
         ]
     );
 }
