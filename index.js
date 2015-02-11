@@ -35,5 +35,5 @@ function castToJSIG(jsonSchema, opts) {
         return caster(jsonSchema, opts);
     }
 
-    console.log('WARN unimplemented caster', type);
+    console.warn('WARN unimplemented caster', type);
 }

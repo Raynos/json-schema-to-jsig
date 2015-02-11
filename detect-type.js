@@ -136,7 +136,7 @@ function detectType(jsonSchema) {
         return JSON_SCHEMA_TYPES.null;
     }
 
-    console.log('WARN unknown schema type', jsonSchema.type,
+    console.warn('WARN unknown schema type', jsonSchema.type,
         jsonSchema);
 
     return 'notKnownYet';
