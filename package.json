@@ -49,6 +49,7 @@
     "view-cover": "opn ./coverage/index.html",
     "travis": "npm run cover -s && istanbul report lcov && ((cat coverage/lcov.info | coveralls) || exit 0)"
   },
+  "pre-commit": [],
   "engine": {
     "node": ">= 0.8.x"
   },
