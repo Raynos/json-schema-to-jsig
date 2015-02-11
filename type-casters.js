@@ -131,7 +131,7 @@ function castArray(jsonSchema, opts) {
 
     var arr = AST.generic(
         AST.literal('Array'),
-        [castToJSIG(items, opts)]
+        [castToJSIG(items, opts) || AST.literal('Any')]
     );
 
     return arr;
