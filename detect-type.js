@@ -94,13 +94,19 @@ function detectType(jsonSchema) {
     }
 
     if (jsonSchema.type === 'number' &&
-        schemaLength(jsonSchema) === 1
+        schemaLength(jsonSchema, [
+            'minimum', 'maximum', 'multipleOf', 
+            'exclusiveMinimum', 'exclusiveMaximum'
+        ]) === 1
     ) {
         return JSON_SCHEMA_TYPES.numberLiteral;
     }
 
     if (jsonSchema.type === 'integer' &&
-        schemaLength(jsonSchema) === 1
+        schemaLength(jsonSchema, [
+            'minimum', 'maximum', 'multipleOf', 
+            'exclusiveMinimum', 'exclusiveMaximum'
+        ]) === 1
     ) {
         return JSON_SCHEMA_TYPES.integerLiteral;
     }
