@@ -10,7 +10,7 @@ var TYPE_CASTERS = {
     'enumString': castEnumString,
     'stringLiteral': castStringLiteral,
     'objectLiteral': castObjectLiteral,
-    'objectUnion': castObjectUnion,
+    'union': union,
     'enumNumber': castEnumNumber,
     'objectIntersection': castObjectIntersection,
     'array': castArray,
@@ -90,8 +90,8 @@ function castObjectLiteral(jsonSchema) {
     return AST.literal('Object');
 }
 
-function castObjectUnion(jsonSchema, opts) {
-    // console.log('objectUnion', jsonSchema);
+function union(jsonSchema, opts) {
+    // console.log('union', jsonSchema);
     var oneOf = jsonSchema.oneOf;
 
     return AST.union(

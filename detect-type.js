@@ -11,7 +11,7 @@ var JSON_SCHEMA_TYPES = {
     'stringLiteral': 'stringLiteral',
     'enumString': 'enumString',
     'objectLiteral': 'objectLiteral',
-    'objectUnion': 'objectUnion',
+    'objectUnion': 'union',
     'enumNumber': 'enumNumber',
     'objectIntersection': 'objectIntersection',
     'array': 'array',
@@ -20,7 +20,8 @@ var JSON_SCHEMA_TYPES = {
     'booleanLiteral': 'booleanLiteral',
     'integerLiteral': 'integerLiteral',
     'emptyObject': 'emptyObject',
-    'null': 'null'
+    'null': 'null',
+    'anyOf': 'union'
 };
 
 module.exports = detectType;
@@ -95,7 +96,7 @@ function detectType(jsonSchema) {
 
     if (jsonSchema.type === 'number' &&
         schemaLength(jsonSchema, [
-            'minimum', 'maximum', 'multipleOf', 
+            'minimum', 'maximum', 'multipleOf',
             'exclusiveMinimum', 'exclusiveMaximum'
         ]) === 1
     ) {
@@ -104,7 +105,7 @@ function detectType(jsonSchema) {
 
     if (jsonSchema.type === 'integer' &&
         schemaLength(jsonSchema, [
-            'minimum', 'maximum', 'multipleOf', 
+            'minimum', 'maximum', 'multipleOf',
             'exclusiveMinimum', 'exclusiveMaximum'
         ]) === 1
     ) {
@@ -130,6 +131,12 @@ function detectType(jsonSchema) {
         schemaLength(jsonSchema) === 1
     ) {
         return JSON_SCHEMA_TYPES.null;
+    }
+
+    if (jsonSchema.type === 'anyOf' &&
+        schemaLength(jsonSchema) === 1
+    ) {
+        return JSON_SCHEMA_TYPES.anyOf;
     }
 
     /* heuristic
